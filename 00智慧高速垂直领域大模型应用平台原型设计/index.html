@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧高速语言大模型应用平台</title>
+<link rel="stylesheet" href="assets/css/base.css">
+</head>
+<body>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script>
+/* ========== 系统配置（单系统 · 菜单对齐 PFD 第 2.3 节路由与菜单定义） ========== */
+window.SYS = {
+  id: "app",
+  name: "智慧高速语言大模型应用平台",
+  home: "qa-workbench",
+  menus: [
+    { label: "智能问答", items: [
+      { view: "qa-workbench", label: "问答工作台", icon: "💬" },
+      { view: "qa-history", label: "会话历史", icon: "🕘" },
+      { view: "qa-tickets", label: "人工兜底工单", icon: "🎫", badge: 2 }
+    ]},
+    { label: "文档生成", items: [
+      { view: "doc-workbench", label: "生成工作台", icon: "📄" },
+      { view: "doc-records", label: "生成记录", icon: "🗂" },
+      { view: "doc-templates", label: "模板管理", icon: "📑" }
+    ]},
+    { label: "知识库管理", items: [
+      { view: "kb-overview", label: "知识库总览", icon: "📊" },
+      { view: "kb-assets", label: "知识素材列表", icon: "📚" },
+      { view: "kb-import", label: "知识批量导入", icon: "⬆" },
+      { view: "kb-review", label: "知识审核队列", icon: "✅", badge: DB.reviews.length },
+      { view: "kb-conflict", label: "知识冲突裁决", icon: "⚖", badge: DB.conflicts.filter(c => c.status === "open").length },
+      { view: "kb-category", label: "知识分类体系", icon: "🌳" },
+      { view: "kb-exception", label: "解析异常任务", icon: "⚠", badge: DB.exceptions.filter(e => e.status === "open").length }
+    ]},
+    { label: "数据查询", items: [
+      { view: "data-query", label: "自然语言查询", icon: "🔍" },
+      { view: "data-dict", label: "数据字典", icon: "📖" },
+      { view: "data-monitor", label: "接口监控", icon: "📡" }
+    ]},
+    { label: "系统管理", items: [
+      { view: "sys-users", label: "用户管理", icon: "👥" },
+      { view: "sys-roles", label: "角色权限", icon: "🔐" },
+      { view: "sys-org", label: "组织管理", icon: "🏢" },
+      { view: "sys-logs", label: "操作日志", icon: "📝" },
+      { view: "sys-config", label: "系统参数", icon: "⚙" },
+      { view: "sys-dashboard", label: "运营看板", icon: "📈" }
+    ]}
+  ]
+};
+</script>
+<script src="assets/js/app.js"></script>
+<script src="js/views-qa.js"></script>
+<script src="js/views-doc.js"></script>
+<script src="js/views-kb.js"></script>
+<script src="js/views-data.js"></script>
+<script src="js/views-sys.js"></script>
+<script src="js/views-global.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if (!sessionStorage.getItem("sys_user")) {
+    sessionStorage.setItem("sys_user", JSON.stringify({ name: "李文静", account: "liwj", dept: "集团知识管理部", roleName: "知识管理员" }));
+  }
+  App.boot(SYS);
+});
+</script>
+</body>
+</html>

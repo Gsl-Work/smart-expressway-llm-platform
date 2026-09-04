@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 - 智慧高速语言大模型应用平台</title>
+<link rel="stylesheet" href="assets/css/base.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="bg-deco" style="width:560px;height:560px;top:-200px;left:-150px"></div>
+  <div class="bg-deco" style="width:400px;height:400px;bottom:-120px;right:-80px"></div>
+  <div class="bg-deco" style="width:200px;height:200px;top:120px;right:220px"></div>
+
+  <div class="login-card">
+    <div class="lc-logo">
+      <div class="logo-icon">交</div>
+      <div>
+        <h1>智慧高速语言大模型应用平台</h1>
+        <div class="lc-sub">Smart Expressway LLM Platform · 交互原型</div>
+      </div>
+    </div>
+
+    <div class="form-item">
+      <label>账号<span class="req">*</span></label>
+      <input class="input" id="account" placeholder="请输入工号 / 手机号" autocomplete="off">
+      <div class="err-msg">请输入账号</div>
+    </div>
+    <div class="form-item">
+      <label>密码<span class="req">*</span></label>
+      <input class="input" id="password" type="password" placeholder="请输入密码（至少6位）">
+      <div class="err-msg">密码长度不能少于6位</div>
+    </div>
+    <div class="flex justify-b align-c mb-16">
+      <label class="checkbox"><input type="checkbox" checked>记住登录状态</label>
+      <a href="javascript:;" onclick="U.toast('原型演示：请联系系统管理员重置密码','info')">忘记密码？</a>
+    </div>
+    <button class="btn primary lg block" id="btnLogin">登 录</button>
+    <div class="sso-btn"><button class="btn lg block" id="btnSSO">使用集团统一身份（SSO）登录</button></div>
+
+    <div class="demo-tip">
+      演示账号（点击自动填充）：<br>
+      <b>zhoujg</b>（系统管理员）· <b>liwj</b>（知识管理员）· <b>wangzy</b>（路段管理）· <b>chenxf</b>（客服）
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script>
+(function () {
+  const acc = document.getElementById("account");
+  const pwd = document.getElementById("password");
+  document.querySelector(".demo-tip").addEventListener("click", function (e) {
+    if (e.target.tagName === "B") { acc.value = e.target.textContent; pwd.value = "Demo@2026"; }
+  });
+  function validate() {
+    let ok = true;
+    [["account", v => !!v.trim()], ["password", v => v.length >= 6]].forEach(([id, test]) => {
+      const el = document.getElementById(id), item = el.closest(".form-item"), pass = test(el.value);
+      item.classList.toggle("has-err", !pass); el.classList.toggle("err", !pass);
+      if (!pass) ok = false;
+    });
+    return ok;
+  }
+  function login() {
+    if (!validate()) { U.toast("请检查表单填写", "error"); return; }
+    const u = DB.users.find(x => x.account === acc.value.trim());
+    const user = u ? { name: u.name, account: u.account, dept: u.dept, roleName: (DB.roles.find(r => r.id === u.roles[0]) || {}).name || "普通用户" }
+                   : { name: acc.value.trim(), account: acc.value.trim(), dept: "交控集团", roleName: "普通用户" };
+    sessionStorage.setItem("sys_user", JSON.stringify(user));
+    U.toast("登录成功，正在进入平台…", "success", 900);
+    setTimeout(() => location.href = "index.html", 900);
+  }
+  document.getElementById("btnLogin").onclick = login;
+  document.getElementById("btnSSO").onclick = function () {
+    this.textContent = "正在跳转集团统一身份认证…";
+    setTimeout(() => {
+      sessionStorage.setItem("sys_user", JSON.stringify({ name: "周建国", account: "zhoujg", dept: "集团信息中心", roleName: "系统管理员" }));
+      U.toast("SSO 免密登录成功", "success", 900);
+      setTimeout(() => location.href = "index.html", 900);
+    }, 1200);
+  };
+  pwd.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  acc.addEventListener("keydown", e => { if (e.key === "Enter") pwd.focus(); });
+})();
+</script>
+</body>
+</html>
